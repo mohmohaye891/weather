@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
-import { View, Text, FlatList} from 'react-native'
+import { View, Text, FlatList, ScrollView} from 'react-native'
 import WeatherItem from './w-item';
 import WItem from './w-item';
+import { useWeatherStore } from '../../store/weather-store';
+import { DAYS, getWeatherInfoByCode } from '../../utils';
 
 export type Weather = {
     day: string;
@@ -44,29 +46,37 @@ export type Weather = {
       day: "Sun",
       weather: "Sunny",
       temp: "26°",
-    },
-    {
-      day: "San",
-      weather: "Sunny",
-      temp: "26°",
-    },
-    {
-      day: "Snu",
-      weather: "Sunny",
-      temp: "26°",
-    },
+    }
   ];
 
   const WList = () => {
     const [forecastData, setForecastData] = useState(DummyWeathers);
+    const dailyForecast = useWeatherStore(state => state.daily);
+
     return (
-      <View className="flex-1">
-        <FlatList
-          data={forecastData}
-          renderItem={({ item }) => <WItem w={item} />}
-          keyExtractor={(item) => item.day}
-        />
-      </View>
+      <ScrollView>
+          <View className="flex-1">
+          {
+            dailyForecast.weathercode.map((code, index) => {
+              const temperature = dailyForecast.temperature_2m_max[index];
+              const date = new Date(dailyForecast.time[index]);
+              const dayOfWeek = DAYS[date.getDay()];
+              const condition = getWeatherInfoByCode(code)?.label;
+              const Img = getWeatherInfoByCode(code)?.image;
+
+              return (
+                <WItem 
+                  key={index} 
+                  temp={temperature} 
+                  day={dayOfWeek}
+                  weatherCondition={condition!}
+                  wImage={Img}
+                />
+              )
+            })
+          }
+        </View>
+      </ScrollView>
     );
   };
   

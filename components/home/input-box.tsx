@@ -3,12 +3,19 @@ import { Text, TextInput, View } from 'react-native'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Theme } from './theme';
 
-const InputBox = () => {
+type InputBoxProps = {
+  searchLocationByCity: (city: string) => void;
+}
+
+const InputBox = ({searchLocationByCity} : InputBoxProps) => {
   return (
     <View className='relative'>
         <TextInput 
             placeholder='City name'
             className="bg-white shadow rounded-3xl p-4 mb-4 ps-14 placeholder: font-bold placeholder:text-secondaryDark"
+            onSubmitEditing={(e) => {
+              searchLocationByCity(e.nativeEvent.text);                            
+            }}
         />
         <MaterialCommunityIcons 
             name="cloud-search-outline" 
